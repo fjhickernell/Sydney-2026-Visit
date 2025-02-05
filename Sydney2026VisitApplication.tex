@@ -1,0 +1,75 @@
+\documentclass{amsart}
+\usepackage{mathtools,upref,siunitx,upquote,fancyvrb,xspace,color}
+\usepackage[hyphens]{url}
+\usepackage[utf8]{inputenc}
+\usepackage{esdiff}
+
+\input{FJHDef.tex}
+
+
+\usepackage{algpseudocode}
+\usepackage{algorithm, algorithmicx}
+\algnewcommand\algorithmicparam{\textbf{Parameters:}}
+\algnewcommand\PARAM{\item[\algorithmicparam]}
+\algnewcommand\algorithmicinput{\textbf{Input:}}
+\algnewcommand\INPUT{\item[\algorithmicinput]}
+\algnewcommand\RETURN{\State \textbf{Return }}
+
+\usepackage[a4paper, margin=1in]{geometry}
+
+\begin{document}
+\title{Proposed Research for Visit Sponsored by the 
+Sydney Mathematical Research Institute in 2026 \\
+\bigskip 
+\large{Rigorous Adaptive Algorithms for Problems with Randomness}}
+\author{Fred J. Hickernell, Illinois Institute of Technology}
+
+\maketitle
+
+The proposed research in Sydney builds on two themes in my own research in the past decade and a half:
+\begin{itemize}
+    \item Quasi-Monte Carlo methods for solving problems with randomness, and
+    \item Rigorous adaptive algorithms for problems defined on cones of inputs.
+\end{itemize}
+By collaborating with the Sydney mathematical community, I hope to build on our mutual strengths to develop rigorous and efficient, adaptive algorithms where none yet exist.
+
+\section{Quasi-Monte (QMC) Carlo Methods }
+QMC methods approximate the population mean, $\mu=\Ex(Y) = \int_{[0,1]^d} f(\vx) \, \dif \vx$---where the random variable $Y = f(\vX)$ is defined by $\vX \sim \cu[0,1]^d$---by the sample mean, $\hmu := n^{-1} \sum_{i=1}^n f(\vx_i)$, but using low discrepancy (LD) sequences $\vx_1, \vx_2, \ldots$ rather than independent and identically distributed (IID) sequences \cite{DicEtal22a,DicEtal14a,DicPil10a}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.3\textwidth]{Figures/Uniform.pdf} \qquad 
+\includegraphics[width = 0.3\textwidth]{Figures/Lattice.pdf}
+    \caption{Comparison of an IID sequence with a popular LD sequence.  The blue dots represent the first $16$ points, the orange dots the next $16$ points, the green dots the next $32$ points, and the red dots the next $64$ points, giving a total of $128$ points.  The lattice LD points are more evenly distributed than the IID points, which have clusters and gaps. \label{fig:points}}
+\end{figure}
+
+Figure \ref{fig:points} shows how the LD sequences are fill space more evenly than IID sequences.  The \emph{discrepancy}, $D(\{x_i\}_{i=1}^n)$,  \cite{Hic97a,Hic99a} is a quantitative measure of how close the empirical distribution of $\{x_i\}_{i=1}^n$ is to the uniform distribution.  Moreover, the error of QMC, $\lvert \mu - \hmu_n\rvert$, is bounded above by $D(\{x_i\}_{i=1}^n) \, \lVert f\rVert$, where  $\lVert f\rVert$ is a semi-norm of $f$, often called the variation.  Different choices of function spaces containing $f$ lead to different definitions of the discrepancy.  LD sequences are sequences that give small values of the discrepancy.
+
+The group at UNSW has pioneered many innovations in the theory and application of QMC.
+
+\section{Rigorous Adaptive Algorithms}
+Although one may sometimes compute the discrepancy of a point set, $D(\{x_i\}_{i=1}^n)$, computing $\lVert f\rVert$ is typically harder than the original problem of computing $\mu=\int_{[0,1]^d} f(\vx) \, \dif \vx$.  Thus the error bound mentioned above is not suitable as a stopping criterion for determining the $n$ required to ensure that $\abs{\mu - \hat{\mu}_n} \le \varepsilon$ for a given error tolerance, $\varepsilon$.  Sometimes practitioners will use random replications of the point set, $\{x_i\}_{i=1}^n$, and use the variance of the resulting random sample of $\hat{\mu}_n$ to estimate the error.
+
+Another approach developed by Hickernell and collaborators is to track the discrete Fourier (complex exponential) coefficients of the $\{f(\vx_i)\}_{i=1}^n$ for lattice LD sequences $\{x_i\}_{i=1}^n)$ for increasing $n$.  Under certain assumptions on the general decay of the true Fourier coefficients of $f$, one can construct theoretically justified stopping criteria for choosing $n$ to guarantee that $\abs{\mu - \hat{\mu}_n} \le \varepsilon$ \cite{JimHic16a}.  An analogous theory holds for digital sequences \cite{HicJim16a}.
+
+Alternatively, one can assume that $f$ is an instance of a Gaussian process and construct credible intervals for $\mu$, which can be used to determine the sample size, $n$, required to meet the desired error tolerance.  In general, this approach requires expensive $\Order(n^3)$ matrix operations, but when the covariance kernels for the Gaussian process are matched with the LD lattice or digital net sequence, the computational burden reduces  to $\Order(n \log(n))$ \cite{RatHic19a,JagHic22a}.
+
+Hickernell and collaborators have also developed rigorous adaptive algorithms for IID Monte Carlo computation of $\mu$ \cite{HicEtal14a} univariate integration, approximation, and optimization \cite{HicETal14b,ChoEtal17a}.
+
+Software libraries in Matlab and Python that implement many of these adaptive algorithms have been developed by Hickernell and collaborators \cite{ChoEtal21a,QMCPy2020a}.  The core assumption in all of these rigorous adaptive algorithms, is that $f$ belongs to a \emph{cone} of functions that are not too peaky.
+
+\section{Proposed Activities During the Visit}
+
+During the proposed visit to Sydney, Hickernell will give a series of several lectures on adaptive algorithms and QMC.  The focus will be to summarize what is known and identify several research problems.  These include the following:
+\begin{itemize}
+    \item The adaptive algorithms for QMC apply to a fixed dimension, $d$. Many interesting applications of QMC involve very large or even infinite $d$, which benefit from multilevel methods \cite{Gil14a}.  We will attempt to develop rigorous stopping criteria for multilevel methods, especially those that arise in the uncertainty quantification problems that Frances Kuo and her collaborators are experts in.
+
+    \item The adaptive univariate integration algorithm seems ripe to be expanded to finite element methods and their a posteriori error bounds.  We will explore this.
+
+    \item We expect that lectures given by Hickernell draw out algorithms that the audience is developing that are amenable to the approach that Hickernell has used for developing adaptive stopping rules.  We will explore these possibilities.
+\end{itemize}
+
+\bibliographystyle{amsplain}
+\bibliography{FJH25,FJHown23}
+
+\end{document}
